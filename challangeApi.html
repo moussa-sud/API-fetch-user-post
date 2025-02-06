@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+                body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, black, red, blue); /* Use 'background' for gradients */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .left {
+            background: linear-gradient(45deg, black, rgb(107, 100, 100), rgb(0, 0, 0)); /* Corrected */
+            flex: 3;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            font-size: medium;
+            overflow: auto;
+            height: 100vh;
+            color: black;
+        }
+
+        .right {
+            background: linear-gradient(45deg, rgb(98, 95, 95), rgb(46, 44, 44), rgb(0, 0, 0)); /* Corrected */
+            flex: 7;
+            align-items: center;
+            justify-content: space-between;
+            display: flex;
+            height: 100vh;
+            overflow: auto;
+            top: 0;
+            font-size: medium;
+            margin: 0;
+            color: black;
+        }
+        
+       h1{
+           color: white;
+           flex-direction: column;
+           font-size: 2em;
+           font-style: oblique;
+           margin: 20px;
+           padding: 0;
+       }
+       p{
+           color: white;
+           font-size: 1.5em;
+           font-style: italic;
+           margin-top: 10px;
+           flex-direction: column;
+           margin: 20px;
+           padding: 0;
+       }
+
+
+    </style>
+    <!-- the left side of the page will display the users -->
+    <div class="left">
+        
+        <ul class="list">
+            
+        </ul>
+    </div>
+    <!--// the left side of the page will display the users // -->
+
+    <!-- the right side of the page will display the posts -->
+    <div class="right">
+
+
+        <ul class="list2">
+            
+        </ul>
+
+    </div>
+    <!--// the right side of the page will display the posts // -->
+
+    <script>
+        let users = [];
+        function getUsers(){
+
+            return new Promise((resolve, reject) => {
+
+            fetch('https://jsonplaceholder.typicode.com/users')
+                .then((response) => {
+                    if(response.ok){
+                        return response.json();        
+                    }
+                }).then((usersJson)=>{
+                    resolve(usersJson); 
+                })
+            }).then((usersJson) => {
+                    users = usersJson; 
+                    let list = document.querySelector('.list');
+                    
+                    for(let post of usersJson){
+                        let item = document.createElement('li');
+                        item.style.listStyle = 'none';
+                        item.innerHTML = `
+                                        <div style="
+                                            background-color: #f9f9f9; 
+                                            border: 1px solid #ddd; 
+                                            border-radius: 8px; 
+                                            padding: 15px; 
+                                            margin-bottom: 10px; 
+                                            box-shadow: 0 4px 6px rgba(0, 3, 0, 0.1);
+                                            max-width: 300px;
+                                            transition: transform 0.2s;
+                                        "
+                                        onmouseover="this.style.transform='scale(1.05)'" 
+                                        onmouseout="this.style.transform='scale(1)'">
+                                            <h3 style="
+                                                color: #333; 
+                                                margin: 0 0 10px 0; 
+                                                font-family: 'Arial', sans-serif; 
+                                                font-size: 20px;
+                                            ">
+                                                ${post.name}
+                                            </h3>
+                                            <p style="
+                                                color: #555; 
+                                                margin: 0; 
+                                                font-family: 'Verdana', sans-serif; 
+                                                font-size: 14px;
+                                            ">
+                                                ${post.email}
+                                            </p>
+                                        </div>
+                                    `;
+                        item.id= post.id; 
+                        list.appendChild(item);
+                    }
+                }
+            )
+        } 
+        function getPost(id){
+            fetch(`https://jsonplaceholder.typicode.com/posts?userId=${id}`)
+
+                .then((response) => {
+                    if(response.ok){
+                        return response.json(); 
+                    }
+                })
+                .then((data) => {
+                    let body = document.querySelector('.list2');
+                    body.innerHTML= '';
+                        let user;
+                        users.forEach(i => {
+                            if (i.id == id) {
+                                user = i;
+                            }
+                        });
+                    for (let post of data) {
+                        let item = document.createElement('li');
+                        item.style.listStyle = 'none';  // Remove bullet points
+                        item.style.marginBottom = '20px';  // Add spacing between cards
+                        item.innerHTML = `
+                            <div style="
+                                background: linear-gradient(145deg, #f0f0f0, #ffffff);
+                                border-radius: 12px;
+                                top: 19px;
+                                padding: 20px;
+                                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                                max-width: 100%; 
+                                margin: 10px;
+                            "
+                            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)'"
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 5px 15px rgba(0, 0, 0, 0.1)'">
+                                
+                                <h1 style="
+                                    font-family: 'Oswald', sans-serif;
+                                    color: #333333;
+                                    font-size: 24px;
+                                    margin-bottom: 10px;
+                                    border-bottom: 2px solid #FF6F61;
+                                    padding-bottom: 5px;
+                                ">${post.title}</h1>
+
+                                <p style="
+                                    font-family: 'Arial', sans-serif;
+                                    color: #555555;
+                                    font-size: 16px;
+                                    line-height: 1.5;
+                                    margin-bottom: 15px;
+                                ">${post.body}</p>
+
+                                <p style="
+                                    font-family: 'Courier New', monospace;
+                                    color: #777777;
+                                    font-size: 14px;
+                                    text-align: right;
+                                ">Author: <strong>${user.name}</strong></p>
+
+                            </div>
+                        `;
+                        body.appendChild(item);
+                    }
+                }
+            ).catch((error)=>{
+                console.log("Error:", error); 
+            }) 
+        }
+
+        function clickHandler(){
+            let listListener = document.querySelector('.list'); 
+            listListener.addEventListener('click', function(e){
+                let itemListener = e.target.closest('li'); 
+                let id =itemListener.id; 
+                getPost(id); 
+                
+            });
+        }
+
+        getUsers()
+    .then(() => {
+        return new Promise((resolve, reject) => {
+            clickHandler();
+            resolve(); // Resolving the promise after the click handler is set up
+        });
+    })
+    .then(() => {
+        console.log('Click handler is set up successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+            
+    </script>
+</body>
+
+</html>
